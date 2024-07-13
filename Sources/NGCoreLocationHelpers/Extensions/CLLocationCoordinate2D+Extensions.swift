@@ -105,3 +105,66 @@ extension CLLocationCoordinate2D {
   }
 }
 
+
+extension CLLocationCoordinate2D {
+  public func bearingTo(_ toLocation: CLLocationCoordinate2D) -> Double {
+    let fromLatitude = self.latitude.toRadians
+    let fromLongitude = self.longitude.toRadians
+
+    let toLatitude = toLocation.latitude.toRadians
+    let toLongitude = toLocation.longitude.toRadians
+    
+    let dLongitude = toLongitude - fromLongitude
+    
+    let y = sin(dLongitude) * cos(toLatitude)
+    let x = cos(fromLatitude) * sin(toLatitude) - sin(fromLatitude) * cos(toLatitude) * cos(dLongitude)
+    let radiansBearing = atan2(y, x).toDegrees
+    
+    if radiansBearing >= 0 {
+      return radiansBearing
+    } else {
+      return radiansBearing + 360
+    }
+
+  }
+}
+
+extension CLLocationCoordinate2D {
+  public func calculateAngle(p2: CLLocationCoordinate2D, p3: CLLocationCoordinate2D) -> Double {
+    let p1 = self.toWebMercator()
+    let p2 = p2.toWebMercator()
+    let p3 = p3.toWebMercator()
+    let angle1 = atan2(p1.y - p2.y, p1.x - p2.x)
+    let angle2 = atan2(p3.y - p2.y, p3.x - p2.x)    
+    
+    var angle: Double = fabs(angle1 - angle2);
+    if (angle > Double.pi) {
+      angle = (Double.pi*2) - angle;
+    }
+    return angle.toDegrees
+  }
+}
+
+extension CLLocationCoordinate2D {
+  func toWebMercator() -> CGPoint {
+    let earthRadius: Double = 6378137 // Earth radius in meters
+    
+    let d2r = Double.pi / 180; // Degrees to radians
+    
+    let x = earthRadius * longitude * d2r
+    let y = earthRadius * log(tan((Double.pi / 4) + (latitude * d2r / 2)))
+    
+    return CGPoint(x: x, y: y)
+  }
+}
+
+extension Double {
+  public var toRadians : Double {
+    return Measurement(value: self, unit: UnitAngle.degrees)
+      .converted(to: .radians)
+      .value
+  }
+  public var toDegrees : Double {
+    return Measurement(value: self, unit: UnitAngle.radians).converted(to: .degrees).value
+  }
+}
