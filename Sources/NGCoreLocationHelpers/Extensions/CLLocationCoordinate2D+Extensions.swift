@@ -103,7 +103,7 @@ extension CLLocationCoordinate2D {
   public static func distance(coodinates: [CLLocationCoordinate2D]) -> CLLocationDistance {
     var distance: CLLocationDistance = 0
     for (idx, coordinate) in coodinates.enumerated() {
-      if idx != coodinates.endIndex - 2 {
+      if idx < coodinates.endIndex - 2 {
         distance += CLLocationCoordinate2D.distance(from: coordinate, to: coodinates[idx + 1])
       }
     }
