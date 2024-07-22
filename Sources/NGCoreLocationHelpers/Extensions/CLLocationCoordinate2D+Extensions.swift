@@ -100,6 +100,17 @@ extension CLLocationCoordinate2D {
     return from.distance(from: to)
   }
   
+  public static func distance(coodinates: [CLLocationCoordinate2D]) -> CLLocationDistance {
+    var distance: CLLocationDistance = 0
+    for (idx, coordinate) in coodinates.enumerated() {
+      if idx != coodinates.endIndex - 2 {
+        distance += CLLocationCoordinate2D.distance(from: coordinate, to: coodinates[idx + 1])
+      }
+    }
+    return distance
+  }
+  
+  
   public func toCLLocation() -> CLLocation {
     CLLocation(latitude: latitude, longitude: longitude)
   }
